@@ -2,7 +2,7 @@
  * Licensed under the Universal Permissive License v 1.0 as shown at
  * http://oss.oracle.com/licenses/upl.
  *
- * Copyright (c) 2009, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -16,15 +16,16 @@
 #include <linux/dtrace/universal.h>
 #include <linux/dtrace/dif.h>
 #include <linux/dtrace/dof_defines.h>
+#include <linux/bpf.h>
 
 /*
- * A DIFO is used to store the compiled DIF for a D expression, its return
+ * A DIFO is used to store the compiled BPF for a D expression, its return
  * type, and its string and variable tables.  The string table is a single
  * buffer of character data into which sets instructions and variable
  * references can reference strings using a byte offset.  The variable table
  * is an array of dtrace_difv_t structures that describe the name and type of
- * each variable and the id used in the DIF code.  This structure is described
- * above in the DIF section of this header file.  The DIFO is used at both
+ * each variable and the id used in the BPF code.  This structure is described
+ * above in the BPF section of this header file.  The DIFO is used at both
  * user-level (in the library) and in the kernel, but the structure is never
  * passed between the two: the DOF structures form the only interface.  As a
  * result, the definition can change depending on the presence of _KERNEL.
@@ -43,7 +44,7 @@ typedef struct dtrace_difo {
 	uint_t dtdo_refcnt;			/* owner reference count */
 	uint_t dtdo_destructive;		/* invokes destructive subroutines */
 #ifndef _KERNEL
-	dtrace_diftype_t orig_dtdo_rtype;	/* orignal return type */
+	dtrace_diftype_t orig_dtdo_rtype;	/* original return type */
 	struct dof_relodesc *dtdo_kreltab;	/* kernel relocations */
 	struct dof_relodesc *dtdo_ureltab;	/* user relocations */
 	struct dt_node **dtdo_xlmtab;		/* translator references */

@@ -2,7 +2,7 @@
  * Licensed under the Universal Permissive License v 1.0 as shown at
  * http://oss.oracle.com/licenses/upl.
  *
- * Copyright (c) 2009, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -16,19 +16,18 @@
 #include <linux/dtrace/universal.h>
 
 /*
- * The following definitions describe the DTrace Intermediate Format (DIF), a a
- * RISC-like instruction set and program encoding used to represent predicates
- * and actions that can be bound to DTrace probes.  The constants below defining
- * the number of available registers are suggested minimums; the compiler should
- * use DTRACEIOC_CONF to dynamically obtain the number of registers provided by
- * the current DTrace implementation.
+ * The following definitions describe the DTrace Intermediate Format (DIF), a
+ * RISC-like program encoding used to transport the BPF which represents
+ * predicates and actions that can be bound to DTrace probes.  The constants
+ * below defining the number of available registers are suggested minimums; the
+ * compiler should use DTRACEIOC_CONF to dynamically obtain the number of
+ * registers and spillable registers provided by the current DTrace
+ * implementation.
  */
 
-#define DIF_VERSION_1	1
-#define DIF_VERSION_2	2
-#define DIF_VERSION	DIF_VERSION_2
-#define	DIF_DIR_NREGS	8		/* number of DIF integer registers */
-#define	DIF_DTR_NREGS	8		/* number of DIF tuple registers */
+#define DBPF_VERSION_1	1
+#define DBPF_VERSION	DBPF_VERSION_1
+#define DBPF_CLOBREGS	5		/* number of eBPF call-clobbered registers */
 
 #define DIF_OP_OR	1		/* or   r1, r2, rd */
 #define DIF_OP_XOR	2		/* xor  r1, r2, rd */

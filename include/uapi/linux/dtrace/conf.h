@@ -2,7 +2,7 @@
  * Licensed under the Universal Permissive License v 1.0 as shown at
  * http://oss.oracle.com/licenses/upl.
  *
- * Copyright (c) 2009, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -18,13 +18,16 @@
 
 /*
  * User-level may need to understand some elements of the kernel DTrace
- * configuration in order to generate correct DIF.  This information is
+ * configuration in order to generate correct BPF.  This information is
  * conveyed via the dtrace_conf structure.
+ *
+ * The BPF "version" is a DTrace-internal integer (DBPF_VERSION) incremented
+ * whenever new helpers are added that DTrace userspace makes use of.
  */
 typedef struct dtrace_conf {
-	uint_t dtc_difversion;			/* supported DIF version */
-	uint_t dtc_difintregs;			/* # of DIF integer registers */
-	uint_t dtc_diftupregs;			/* # of DIF tuple registers */
+	uint_t dtc_bpfversion;			/* supported BPF "version" */
+	uint_t dtc_bpfnregs;			/* # of bpf registers */
+	uint_t dtc_bpfclobregs;			/* # of call-clobbered registers */
 	uint_t dtc_ctfmodel;			/* CTF data model */
 	/* Deviation from Solaris...  Used to just be 8 padding entries. */
 	uint_t dtc_maxbufs;			/* max # of buffers */

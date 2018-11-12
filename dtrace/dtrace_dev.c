@@ -25,6 +25,7 @@
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/uaccess.h>
+#include <linux/bpf.h>
 
 #include "ctf_api.h"
 #include "dtrace.h"
@@ -821,9 +822,9 @@ static long dtrace_ioctl(struct file *file,
 		dt_dbg_ioctl("IOCTL CONF (cmd %#x), argp %p\n", cmd, argp);
 
 		memset(&conf, 0, sizeof(conf));
-		conf.dtc_difversion = DIF_VERSION;
-		conf.dtc_difintregs = DIF_DIR_NREGS;
-		conf.dtc_diftupregs = DIF_DTR_NREGS;
+		conf.dtc_bpfversion = DBPF_VERSION;
+		conf.dtc_bpfnregs = __MAX_BPF_REG;
+		conf.dtc_bpfclobregs = DBPF_CLOBREGS;
 		conf.dtc_ctfmodel = CTF_MODEL_NATIVE;
 		conf.dtc_maxbufs = nr_cpu_ids;
 

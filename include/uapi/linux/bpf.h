@@ -152,6 +152,7 @@ enum bpf_prog_type {
 	BPF_PROG_TYPE_LWT_SEG6LOCAL,
 	BPF_PROG_TYPE_LIRC_MODE2,
 	BPF_PROG_TYPE_SK_REUSEPORT,
+	BPF_PROG_TYPE_DTRACE,
 };
 
 enum bpf_attach_type {
@@ -2141,6 +2142,171 @@ union bpf_attr {
  *		request in the skb.
  *	Return
  *		0 on success, or a negative error in case of failure.
+ *
+ * int bpf_dtrace_copys(void *src, void *dst, u64 size)
+ * 	Description
+ *		Copy a string of length *size* from the address *src* to the address *dst*.
+ *	Return
+ *		0 on success (no error checking yet).
+ *	DIF ops: DIF_OP_COPYS
+ *
+ * int bpf_dtrace_sets(u64 off)
+ *	Description
+ *		Get the address of the string at *off* in the string table.
+ *	Return
+ *		The address of the string.
+ *	DIF ops: DIF_OP_SETS
+ *
+ * int bpf_dtrace_strlen(void *addr, u64 len)
+ *	Description
+ *		Get the length of the string of maximum length *len* at *addr* in the
+ *		string table.
+ *	Return
+ *		The length of the string, capped at *len*, or the default strsize if 0.
+ *
+ * int bpf_dtrace_set_global(u32 varid, u64 val)
+ *	Description
+ *		Set the global variable *varid* to the specified *val*.
+ *	Return
+ *		Unused.
+ * 	DIF ops: DIF_OP_STGS
+ *
+ * int bpf_dtrace_set_thread(u32 varid, u64 val)
+ *	Description
+ *		Set a thread variable *varid* to the specified *val*.
+ *	Return
+ *		Unused.
+ *	DIF ops: DIF_OP_STTS
+ *
+ * int bpf_dtrace_set_local(u32 varid, u64 val)
+ *	Description
+ *		Set a local variable *varid* to the specified *val*.
+ *	Return
+ *		Unused.
+ *	DIF ops: DIF_OP_STLS
+ *
+ * int bpf_dtrace_set_global_assoc(u32 varid, u64 val, void *data, u32 count)
+ *	Description
+ *		Set a global associative array item *varid* to the
+ *		specified *val*: the associative-array key pointed to
+ *		by *data* contains *count* keys of size 2x*count* bytes.
+ *	Return
+ *		Unused.
+ *	Stack layout
+ *		Earliest args first, arg N is at r10 - data + (N * 2);
+ *		each arg is a pair of (value, size) in consecutive stack slots.
+ *	DIF ops: DIF_OP_STGAA
+ *
+ * int bpf_dtrace_set_thread_assoc(u32 varid, u64 val, void *data, u32 count)
+ *	Description
+ *		Set a per-thread associative array item *varid* to the
+ *		specified *val*: the associative-array key pointed to
+ *		by *data* contains *count* keys of size 2x*count* bytes.
+ *	Return
+ *		Unused.
+ *	Stack layout
+ *		Earliest args first, arg N is at r10 - data + (N * 2);
+ *		each arg is a pair of (value, size) in consecutive stack slots.
+ *	DIF ops: DIF_OP_STTAA
+ *
+ * u64 bpf_dtrace_get_global(u32 varid)
+ *	Description
+ *		Get the value of the global variable *varid*.(XXX: we
+ *		might want to add a 'restricted' parameter here to allow
+ *		implementation of RL* DIF functions for unprivileged
+ *		DTrace use easily.)
+ *		Variables may be DIF_VAR_* constants.
+ *	Return
+ *		The value of the variable.
+ *	DIF ops: DIF_OP_LDGS
+ *
+ * u64 bpf_dtrace_get_thread(u32 varid)
+ * 	Description
+ *		Get the value of the thread variable with the specified
+ *		*varid*.  (XXX: 'restricted', as above.)
+ *	Return
+ *		The value of the variable.
+ *	DIF ops: DIF_OP_LDTS
+ *
+ * u64 bpf_dtrace_get_local(u32 varid)
+ * 	Description
+ *		Get the value of the local variable with the specified
+ *		*varid*.  (XXX: 'restricted', as above.)
+ *	Return
+ *		The value of the variable.
+ *	DIF ops: DIF_OP_LDLS
+ *
+ * u64 bpf_dtrace_get_global_assoc(u32 varid, void *data, u32 count)
+ * 	Description
+ *		Get the value of the associative-array variable with the
+ *		specified *varid*: the associative-array key pointed to
+ *		by *data* contains *count* keys of size 2x*count* bytes.
+ *		(XXX: 'restricted', as above.)
+ *	Return
+ *		The value of the variable.
+ *	Stack layout
+ *		Earliest args first, arg N is at r10 - data + (N * 2);
+ *		each arg is a pair of (value, size) in consecutive stack slots.
+ *	DIF ops: DIF_OP_LDGAA
+ *
+ * u64 bpf_dtrace_get_thread_assoc(u32 varid, void *data, u32 count)
+ * 	Description
+ *		Get the value of the thread-local associative-array
+ *		variable with the specified *varid*: the associative-arra
+ *		key pointed to by *data* contains *count* keys of size
+ *		2x*count* bytes. (XXX: 'restricted', as above.)
+ *	Return
+ *		The value of the variable.
+ *	Stack layout
+ *		Earliest args first, arg N is at r10 - data + (N * 2);
+ *		each arg is a pair of (value, size) in consecutive stack slots.
+ *	DIF ops: DIF_OP_LDTAA
+ *
+ * u64 bpf_dtrace_get_global_array(u32 varid, u64 index)
+ * 	Description
+ *		Get the value of element *index* of the global array
+ *		variable with the specified *varid*.
+ *	Return
+ *		The value of the variable.
+ *	DIF ops: DIF_OP_LDGA
+ *
+ * u64 bpf_dtrace_get_thread_array(u32 varid, u64 index)
+ * 	Description
+ *		Get the value of element *index* of the thread-local array
+ *		variable with the specified *varid*.
+ *	Return
+ *		The value of the variable.
+ *	DIF ops: DIF_OP_LDTA
+ *
+ *	Note: never implemented in DIF: we can probably avoid implementing it
+ *	too, at least for a while. :)
+ *
+ * int bpf_dtrace_strcmp(void *s1, void *s2)
+ * 	Description
+ *		Commpare two strings *s1* and *s2*.
+ *	Return
+ *		As C strcmp().
+ *	DIF ops: DIF_OP_SCMP
+ *
+ * int bpf_dtrace_alloc_scratch(u64 size)
+ *	Description
+ *		Allocate *size* bytes of scratch space.
+ *	Return
+ *		a pointer to the specified scratch space, or 0 on error.
+ *		(DTrace userspace has no code to handle the error case!)
+ *	DIF ops: DIF_OP_ALLOCS
+ *
+ * int bpf_dtrace_subr(u32 op, void *args, u32 count)
+ * 	Description
+ *		Subr/function call to subr *op*, with *count* args
+ *		starting at address *args* on the BPF stack.
+ *	Return:
+ *		Return value of subr.
+ *	Stack layout
+ *		Earliest args first, arg N is at r10 - data + (N * 2);
+ *		each arg is a pair of (value, size) in consecutive stack slots.
+ *	DIF ops: DIF_OP_CALL
+ *
  */
 #define __BPF_FUNC_MAPPER(FN)		\
 	FN(unspec),			\
@@ -2226,7 +2392,26 @@ union bpf_attr {
 	FN(get_current_cgroup_id),	\
 	FN(get_local_storage),		\
 	FN(sk_select_reuseport),	\
-	FN(skb_ancestor_cgroup_id),
+	FN(skb_ancestor_cgroup_id),	\
+	FN(dtrace_copys),		\
+	FN(dtrace_sets),		\
+	FN(dtrace_strlen),		\
+	FN(dtrace_set_global),		\
+	FN(dtrace_set_thread),		\
+	FN(dtrace_set_local),		\
+	FN(dtrace_set_global_assoc),	\
+	FN(dtrace_set_thread_assoc),	\
+	FN(dtrace_get_global),		\
+	FN(dtrace_get_thread),		\
+	FN(dtrace_get_local),		\
+	FN(dtrace_get_global_assoc),	\
+	FN(dtrace_get_thread_assoc),	\
+	FN(dtrace_get_global_array),	\
+	FN(dtrace_get_thread_array),	\
+	FN(dtrace_strcmp),		\
+	FN(dtrace_alloc_scratch),	\
+	FN(dtrace_subr),		\
+
 
 /* integer value in 'imm' field of BPF_CALL instruction selects which helper
  * function eBPF program intends to call

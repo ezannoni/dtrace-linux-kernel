@@ -2,7 +2,7 @@
  * Licensed under the Universal Permissive License v 1.0 as shown at
  * http://oss.oracle.com/licenses/upl.
  *
- * Copyright (c) 2009, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -75,9 +75,10 @@
 #define DOF_ID_MODEL	4
 #define DOF_ID_ENCODING	5
 #define DOF_ID_VERSION	6
-#define DOF_ID_DIFVERS	7
-#define	DOF_ID_DIFIREG	8	/* DIF integer registers used by compiler */
-#define	DOF_ID_DIFTREG	9	/* DIF tuple registers used by compiler */
+#define DOF_ID_BPFVERS	7
+#define	DOF_ID_BPFNREG	8	/* BPF registers used by compiler */
+#define	DOF_ID_BPFCLOBREG	9  /* BPF call-clobbered registers assumed by
+				      compiler */
 #define	DOF_ID_PAD	10	/* start of padding bytes (all zeroes) */
 
 #define DOF_MAG_MAG0	0x7F	/* DOF_ID_MAG[0-3] */
@@ -108,9 +109,9 @@
 #define DOF_ENCODE_NATIVE	DOF_ENCODE_LSB
 #endif
 
-#define DOF_VERSION_1	1
-#define DOF_VERSION_2	2
-#define DOF_VERSION	DOF_VERSION_2
+/* DOF versions 1 and 2 are DIF-based and not supported. */
+#define DOF_VERSION_3	3
+#define DOF_VERSION	DOF_VERSION_3
 
 #define DOF_FL_VALID	0	/* mask of all valid dofh_flags bits */
 

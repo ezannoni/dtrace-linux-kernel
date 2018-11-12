@@ -2,7 +2,7 @@
  * Licensed under the Universal Permissive License v 1.0 as shown at
  * http://oss.oracle.com/licenses/upl.
  *
- * Copyright (c) 2009, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -17,12 +17,13 @@
 #include <linux/dtrace/dif_defines.h>
 
 /*
- * The following definitions describe the DTrace Intermediate Format (DIF), a a
- * RISC-like instruction set and program encoding used to represent predicates
- * and actions that can be bound to DTrace probes.  The constants below defining
- * the number of available registers are suggested minimums; the compiler should
- * use DTRACEIOC_CONF to dynamically obtain the number of registers provided by
- * the current DTrace implementation.
+ * The following definitions describe the DTrace Intermediate Format (DIF), a
+ * RISC-like program encoding used to transport the BPF which represents
+ * predicates and actions that can be bound to DTrace probes.  The constants
+ * below defining the number of available registers are suggested minimums; the
+ * compiler should use DTRACEIOC_CONF to dynamically obtain the number of
+ * registers and spillable registers provided by the current DTrace
+ * implementation.
  */
 
 /*
