@@ -167,6 +167,7 @@ typedef uint32_t dof_stridx_t;	/* string table index type */
 
 #define	DOF_RELO_NONE	0		/* empty relocation entry */
 #define	DOF_RELO_SETX	1		/* relocate setx value */
+#define	DOF_RELO_SETX64	2		/* relocate 64-bit setx value */
 
 typedef uint32_t dof_attr_t;		/* encoded stability attributes */
 
